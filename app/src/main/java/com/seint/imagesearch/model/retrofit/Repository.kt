@@ -33,7 +33,7 @@ class Repository private constructor() {
         retrofitService = retrofit.create(RetrofitService::class.java!!)
     }
 
-    fun imageSearch(parameters: MutableMap<String,String> ,dataResponse : APIResponse<List<ImageModel>>): MutableLiveData<List<ImageModel>> {
+    fun imageSearch( parameters: MutableMap<String,String> ,dataResponse : APIResponse<List<ImageModel>>): MutableLiveData<List<ImageModel>> {
         var data = MutableLiveData<List<ImageModel>>()
 
         retrofitService.searchImage(parameters).enqueue(object :
@@ -46,7 +46,7 @@ class Repository private constructor() {
                         it.search_text = parameters.getValue("q")
                     }
                     data.value = imageSearchResponse.imageList
-                    dataResponse.onSuccess( data)
+                    dataResponse.onSuccess( data,imageSearchResponse?.totalCount)
 
 
                 }

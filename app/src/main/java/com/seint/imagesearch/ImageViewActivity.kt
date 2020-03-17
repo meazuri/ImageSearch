@@ -18,6 +18,7 @@ class ImageViewActivity : AppCompatActivity() {
         setContentView(R.layout.activity_image_view)
 
         val imageUrl = intent.getStringExtra("ImageUrl")
+        Picasso.get().setIndicatorsEnabled(true)
         Picasso.get().load(imageUrl).error(R.drawable.error).fit().into(imageViewBig);
 
     }
