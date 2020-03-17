@@ -1,4 +1,4 @@
-package com.seint.imagesearch.retrofit
+package com.seint.imagesearch.model.retrofit
 
 import com.seint.imagesearch.model.ImageSearchResponse
 import retrofit2.Call

@@ -1,9 +1,7 @@
-package com.seint.imagesearch.retrofit
+package com.seint.imagesearch.model.retrofit
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.seint.imagesearch.model.ImageModel
-import com.seint.imagesearch.model.ImageSearchResponse
+import com.seint.imagesearch.model.*
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
@@ -11,11 +9,12 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.Executors
 
 class Repository private constructor() {
     private val retrofitService: RetrofitService
     val HTTPS_API_URL = "https://contextualwebsearch-websearch-v1.p.rapidapi.com/"
-
+    private val mExecutor = Executors.newFixedThreadPool(5)
 
     init {
         val logging = HttpLoggingInterceptor()
@@ -34,14 +33,23 @@ class Repository private constructor() {
         retrofitService = retrofit.create(RetrofitService::class.java!!)
     }
 
-    fun imageSearch(parameters: MutableMap<String,String>): MutableLiveData<List<ImageModel>> {
+    fun imageSearch(parameters: MutableMap<String,String> ,dataResponse : APIResponse<List<ImageModel>>): MutableLiveData<List<ImageModel>> {
         var data = MutableLiveData<List<ImageModel>>()
 
         retrofitService.searchImage(parameters).enqueue(object :
             Callback<ImageSearchResponse> {
             override fun onResponse(call: Call<ImageSearchResponse>, response: Response<ImageSearchResponse>) {
                 val imageSearchResponse =  response.body()
-                data.value = imageSearchResponse?.imageList!!
+
+                if(imageSearchResponse?.imageList != null) {
+                    imageSearchResponse.imageList.map {
+                        it.search_text = parameters.getValue("q")
+                    }
+                    data.value = imageSearchResponse.imageList
+                    dataResponse.onSuccess( data)
+
+
+                }
             }
 
             override fun onFailure(call: Call<ImageSearchResponse>, t: Throwable) {

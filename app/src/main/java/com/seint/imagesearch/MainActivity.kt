@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
             var searchText = editTextSearch.text.toString()
             imageSearchViewModel.searchImage(searchText)
         }
-        imageSearchViewModel.getImageListObservable().observe(this, Observer {
+        imageSearchViewModel.imageListObservable.observe(this, Observer {
 
             if(it != null){
                 mAdapter.setImageData(it)
