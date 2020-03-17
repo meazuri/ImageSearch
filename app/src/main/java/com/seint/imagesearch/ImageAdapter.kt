@@ -1,6 +1,8 @@
 package com.seint.imagesearch
 
 import android.content.Context
+import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,6 +10,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.seint.imagesearch.model.ImageModel
+import com.squareup.picasso.Picasso
 
 class ImageAdapter (private val context: Context) : RecyclerView.Adapter<ImageAdapter.MyViewHolder>(){
 
@@ -30,6 +33,8 @@ class ImageAdapter (private val context: Context) : RecyclerView.Adapter<ImageAd
         holder.dataPosition = position
         holder.tvDesp?.text = imageData.title
         holder.tvTitle?.text = imageData.name
+        Picasso.get().load(imageData.thumbnail).error(R.drawable.error).into(holder.imgView);
+
     }
 
 
@@ -40,7 +45,10 @@ class ImageAdapter (private val context: Context) : RecyclerView.Adapter<ImageAd
         var dataPosition = 0
         init {
             itemView?.setOnClickListener {
-                // Snackbar.make(it, mobileUsageList[dataPosition].quarter, Snackbar.LENGTH_LONG).show()
+
+                val intent = Intent(context,ImageViewActivity::class.java)
+                intent.putExtra("ImageUrl",imgList.get(dataPosition).imageUrl)
+                context.startActivity(intent)
             }
         }
     }
