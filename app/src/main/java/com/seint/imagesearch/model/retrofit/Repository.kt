@@ -49,6 +49,9 @@ class Repository private constructor() {
                     dataResponse.onSuccess( data,imageSearchResponse?.totalCount)
 
 
+                }else{
+                    data.setValue(null)
+
                 }
             }
 

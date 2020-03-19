@@ -9,7 +9,7 @@ import com.google.gson.annotations.SerializedName
 data class ImageModel (
     @ColumnInfo(name = "id")
     @PrimaryKey(autoGenerate = true)
-    var id : Int,
+    var id : Int =0,
 
     @ColumnInfo(name = "url")
     @SerializedName("url") var imageUrl : String,
@@ -34,6 +34,9 @@ data class ImageModel (
 
     @ColumnInfo(name = "title")
     @SerializedName ("title" ) var title: String,
+
+    @ColumnInfo(name ="imageWebSearchUrl")
+    @SerializedName("imageWebSearchUrl") var imageWebSearchUrl: String,
 
     @ColumnInfo(name = "search_text")
     var search_text :String

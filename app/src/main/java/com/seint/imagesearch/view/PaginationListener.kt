@@ -1,7 +1,6 @@
 package com.seint.imagesearch.view
 
 import androidx.recyclerview.widget.RecyclerView
-import androidx.annotation.NonNull
 import androidx.recyclerview.widget.LinearLayoutManager
 
 

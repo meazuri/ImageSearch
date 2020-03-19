@@ -1,16 +1,20 @@
-package com.seint.imagesearch
+package com.seint.imagesearch.view
 
 import android.content.Context
 import android.content.Intent
-import android.util.Log
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.seint.imagesearch.R
 import com.seint.imagesearch.model.ImageModel
 import com.squareup.picasso.Picasso
+import androidx.core.content.ContextCompat.startActivity
+
+
 
 class ImageAdapter (private val context: Context) : RecyclerView.Adapter<ImageAdapter.MyViewHolder>(){
 
@@ -33,7 +37,7 @@ class ImageAdapter (private val context: Context) : RecyclerView.Adapter<ImageAd
         holder.dataPosition = position
         holder.tvDesp?.text = imageData.title
         holder.tvTitle?.text = imageData.name
-        Picasso.get().load(imageData.thumbnail).error(R.drawable.error).into(holder.imgView);
+        Picasso.get().load(imageData.thumbnail).placeholder(R.drawable.loadinganimation).error(R.drawable.error).into(holder.imgView);
 
     }
 
@@ -45,8 +49,12 @@ class ImageAdapter (private val context: Context) : RecyclerView.Adapter<ImageAd
         var dataPosition = 0
         init {
             itemView?.setOnClickListener {
-
-                val intent = Intent(context,ImageViewActivity::class.java)
+                var intent = Intent(context, WebViewActivity::class.java)
+                intent.putExtra(GoogleSearchFragment.ARG_NAME,imgList.get(dataPosition).imageWebSearchUrl)
+                context.startActivity(intent)
+            }
+            imgView?.setOnClickListener {
+                val intent = Intent(context, ImageViewActivity::class.java)
                 intent.putExtra("ImageUrl",imgList.get(dataPosition).imageUrl)
                 context.startActivity(intent)
             }

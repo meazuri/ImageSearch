@@ -23,4 +23,10 @@ interface ImageModelDao{
     @Query("DELETE FROM ImageModel")
     fun nukeTable()
 
+    @Query("SELECT * FROM ImageModel WHERE name = :name")
+    fun getImageModel(name:String) : LiveData<ImageModel>
+
+    @Query("SELECT count(*) FROM ImageModel")
+    fun getImagesCount(): Int
+
 }

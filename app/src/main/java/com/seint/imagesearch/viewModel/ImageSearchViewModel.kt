@@ -9,16 +9,22 @@ import com.seint.imagesearch.model.room.AppDatabase
 import com.seint.imagesearch.model.room.LocalRepository
 import com.seint.imagesearch.view.PaginationListener
 import java.util.concurrent.Executors
+import android.R.id.edit
+import android.content.Context
+import android.content.SharedPreferences
+import com.seint.imagesearch.model.LocalSharePreference
+
 
 class ImageSearchViewModel( application: Application) : AndroidViewModel(application) {
 
-     val appContext = application
      var imageListObservable: LiveData<List<ImageModel>> = MutableLiveData<List<ImageModel>>()
 
      var isThisLastPage = false
      var totalPage = 10
      var isThisLoading = false
      var currentPage = PaginationListener.PAGE_START
+
+    var onSuccess :MutableLiveData<Boolean> = MutableLiveData<Boolean>()
 
     private var searchTextLiveData = MutableLiveData<String>()
 
@@ -27,17 +33,20 @@ class ImageSearchViewModel( application: Application) : AndroidViewModel(applica
 
 
     init {
+
         //initialize local repository
         val imageModelDao = AppDatabase.getDataBase(application).imageModelDao()
-        localRepository = LocalRepository(imageModelDao)
+        localRepository = LocalRepository(imageModelDao,application)
 
+        //init live data
         imageListObservable = localRepository.allImages
 
-//        imageListObservable =Transformations.switchMap(searchTextLiveData , {searchText ->
-//            fetchData(searchText)
-//        })
-        searchTextLiveData.value =" Taylor swift"
-        fetchData(searchTextLiveData.value.toString())
+        searchTextLiveData.value = LocalSharePreference.getSearchText(application)
+
+
+        if(searchTextLiveData.value != null) {
+            fetchData(searchTextLiveData.value.toString())
+        }
 
 
 
@@ -56,9 +65,9 @@ class ImageSearchViewModel( application: Application) : AndroidViewModel(applica
 
     fun fetchData(search: String):LiveData<List<ImageModel>> {
 
-        //var  localImageList  :LiveData<List<ImageModel>> =  MutableLiveData<List<ImageModel>>()
+        if ( search != "") {
 
-        if (search != "") {
+            onSuccess.value =false
             var parameters = mutableMapOf<String, String>()
             parameters.put("autoCorrect", "false")
             parameters.put("pageNumber", currentPage.toString())
@@ -72,15 +81,23 @@ class ImageSearchViewModel( application: Application) : AndroidViewModel(applica
                 override fun onSuccess(data: LiveData<List<ImageModel>>, totalCount : Int) {
                     totalPage = totalCount
                     imageListObservable = data
+                    isThisLoading = false
+                    onSuccess.value =true
                     mExecutor.execute {
-                        if (data.value != null) {
-                            if(currentPage == PaginationListener.PAGE_START) {
-                                localRepository.clearData()
-                            }
+
+                        if(currentPage == PaginationListener.PAGE_START) {
+                            localRepository.clearData()
+                        }
+                        if (!data.value.isNullOrEmpty()) {
+                            LocalSharePreference.saveSearchText(getApplication() ,search)
                             localRepository.saveSearchImages(data.value!!)
-                            imageListObservable = localRepository.allImages
+
+                        }else{
+                            LocalSharePreference.saveSearchText(getApplication() ,"")
 
                         }
+                        imageListObservable = localRepository.allImages
+
                     }
                 }
 
@@ -100,8 +117,12 @@ class ImageSearchViewModel( application: Application) : AndroidViewModel(applica
     }
 
     fun  searchImage(search: String){
-        this.searchTextLiveData.value= search
-        fetchData(search)
+
+            clearData()
+            this.searchTextLiveData.value = search
+            fetchData(search)
+
+
 
     }
     fun  loadMoreData() : Boolean{

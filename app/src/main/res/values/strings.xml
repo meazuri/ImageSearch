@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">ImageSearch</string>
     <string name="search">Search</string>
+    <string name="tab_text_1">Image</string>
+    <string name="tab_text_2">Google</string>
+
 </resources>
